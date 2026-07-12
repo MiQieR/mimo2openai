@@ -1,0 +1,15 @@
+{
+  "name": "mimo2openai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "tsc --noEmit",
+    "deploy": "vercel deploy --prod"
+  },
+  "devDependencies": {
+    "@vercel/node": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
