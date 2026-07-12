@@ -34,6 +34,9 @@ function buildMiMoRequest(body: OpenAISpeechRequest): MiMoRequest {
   };
 }
 
+declare const PROXY_API_KEY: string;
+declare const MIMO_API_KEY: string;
+
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -49,10 +52,14 @@ export default async function handler(req: Request): Promise<Response> {
     return errorJson("Method not allowed", 405);
   }
 
+  if (!PROXY_API_KEY || !MIMO_API_KEY) {
+    return errorJson("Server misconfigured: missing API keys", 500, "server_error");
+  }
+
   const authHeader = req.headers.get("Authorization");
-  const apiKey = authHeader?.replace("Bearer ", "");
-  if (!apiKey) {
-    return errorJson("Missing API key. Provide via Authorization: Bearer <key>", 401, "invalid_api_key");
+  const token = authHeader?.replace("Bearer ", "");
+  if (!token || token !== PROXY_API_KEY) {
+    return errorJson("Invalid API key", 401, "invalid_api_key");
   }
 
   let body: OpenAISpeechRequest;
@@ -70,7 +77,7 @@ export default async function handler(req: Request): Promise<Response> {
 
   try {
     if (body.stream) {
-      const mimoResp = await callMiMoStream(mimoReq, apiKey);
+      const mimoResp = await callMiMoStream(mimoReq, MIMO_API_KEY);
       const reader = mimoResp.body!.getReader();
       const decoder = new TextDecoder();
 
@@ -116,7 +123,7 @@ export default async function handler(req: Request): Promise<Response> {
       });
     }
 
-    const result = await callMiMo(mimoReq, apiKey);
+    const result = await callMiMo(mimoReq, MIMO_API_KEY);
     const audioData = result.choices?.[0]?.message?.audio?.data;
 
     if (!audioData) {

@@ -1,4 +1,4 @@
-const VOICE_MAP: Record<string, string> = {
+const OPENAI_ALIASES: Record<string, string> = {
   alloy: "mimo_default",
   echo: "苏打",
   fable: "茉莉",
@@ -6,21 +6,11 @@ const VOICE_MAP: Record<string, string> = {
   nova: "冰糖",
   shimmer: "Mia",
   coral: "Chloe",
-
-  mimo_default: "mimo_default",
-  冰糖: "冰糖",
-  茉莉: "茉莉",
-  苏打: "苏打",
-  白桦: "白桦",
-  Mia: "Mia",
-  Chloe: "Chloe",
-  Milo: "Milo",
-  Dean: "Dean",
 };
 
 export function mapVoice(voice: string | undefined): string {
   if (!voice) return "mimo_default";
-  return VOICE_MAP[voice] || "mimo_default";
+  return OPENAI_ALIASES[voice] || voice;
 }
 
 export function getContentType(format: string | undefined): string {
